@@ -20,7 +20,8 @@
   "homepage": "https://github.com/process-engine/kpi_api_core#readme",
   "dependencies": {
     "@process-engine/kpi_api_contracts": "feature~initial_implementation",
-    "@process-engine/logging_api_contracts": "feature~initial_implementation"
+    "@process-engine/logging_api_contracts": "feature~initial_implementation",
+    "@process-engine/process_engine_contracts": "feature~store_enter_and_exit_token_separately"
   },
   "devDependencies": {
     "@essential-projects/tslint-config": "1.0.0",
