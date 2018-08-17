@@ -1,4 +1,4 @@
-import {ActiveToken, AverageFlowNodeRuntime, IKpiApiService} from '@process-engine/kpi_api_contracts';
+import {ActiveToken, FlowNodeRuntimeInformation, IKpiApiService} from '@process-engine/kpi_api_contracts';
 import {ILoggingRepository} from '@process-engine/logging_api_contracts';
 import {IFlowNodeInstanceRepository} from '@process-engine/process_engine_contracts';
 
@@ -28,11 +28,13 @@ export class KpiApiService implements IKpiApiService {
     return this._loggingRepository;
   }
 
-  public async getAverageRuntimeForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<AverageFlowNodeRuntime>> {
+  public async getRuntimeInformationForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<FlowNodeRuntimeInformation>> {
     return Promise.resolve([]);
   }
 
-  public async getAverageRuntimeForFlowNode(identity: IIdentity, processModelId: string, flowNodeId: string): Promise<AverageFlowNodeRuntime> {
+  public async getRuntimeInformationForFlowNode(identity: IIdentity,
+                                                processModelId: string,
+                                                flowNodeId: string): Promise<FlowNodeRuntimeInformation> {
     return Promise.resolve({});
 
   }
