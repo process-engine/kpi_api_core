@@ -178,7 +178,7 @@ export class KpiApiService implements IKpiApiService {
 
       const groupHasNoMatchingEntry: boolean = !groupedMetrics[metric.flowNodeId];
 
-      if (!groupHasNoMatchingEntry) {
+      if (groupHasNoMatchingEntry) {
         groupedMetrics[metric.flowNodeId] = [];
       }
 
@@ -234,7 +234,7 @@ export class KpiApiService implements IKpiApiService {
 
       const groupHasNoMatchingEntry: boolean = !groupedMetrics[metric.flowNodeInstanceId];
 
-      if (!groupHasNoMatchingEntry) {
+      if (groupHasNoMatchingEntry) {
         groupedMetrics[metric.flowNodeInstanceId] = [];
       }
 
