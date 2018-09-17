@@ -24,6 +24,17 @@ type FlowNodeInstanceGroups = {
   [flowNodeInstanceId: string]: Array<Metric>,
 };
 
+/**
+ * Contains the quartile runtime data for a FlowNode.
+ *
+ * Only use internally.
+ */
+type QuartileInfos = {
+  firstQuartile: number,
+  median: number,
+  thirdQuartile: number,
+};
+
 export class KpiApiService implements IKpiApiService {
 
   private _iamService: IIAMService;
@@ -208,15 +219,17 @@ export class KpiApiService implements IKpiApiService {
       return this._calculateRuntimeForFlowNodeInstance(groupedMetrics[flowNodeInstanceKey]);
     });
 
+    const quartileInfos: QuartileInfos = this._calculateQuartiles(runtimes);
+
     const runtimeInformation: FlowNodeRuntimeInformation = new FlowNodeRuntimeInformation();
     runtimeInformation.flowNodeId = flowNodeId;
     runtimeInformation.processModelId = processModelId;
     runtimeInformation.minRuntimeInMs = Math.min(...runtimes);
     runtimeInformation.maxRuntimeInMs = Math.max(...runtimes);
     runtimeInformation.arithmeticMeanRuntimeInMs = this._calculateFlowNodeArithmeticMeanRuntime(runtimes);
-    runtimeInformation.firstQuartileRuntimeInMs = 0;
-    runtimeInformation.medianRuntimeInMs = 0;
-    runtimeInformation.thirdQuartileRuntimeInMs = 0;
+    runtimeInformation.firstQuartileRuntimeInMs = quartileInfos.firstQuartile;
+    runtimeInformation.medianRuntimeInMs = quartileInfos.median;
+    runtimeInformation.thirdQuartileRuntimeInMs = quartileInfos.thirdQuartile;
 
     return runtimeInformation;
   }
@@ -272,6 +285,58 @@ export class KpiApiService implements IKpiApiService {
       .asMilliseconds();
 
     return runtimeTotal;
+  }
+
+  /**
+   * Calculates the quartile runtims for the given set of runtimes.
+   *
+   * @param   runtimes The set of runtimes for which to calculate the quartiles.
+   * @returns          A set of quartiles.
+   */
+  private _calculateQuartiles(runtimes: Array<number>): QuartileInfos {
+
+    const runtimeAmounts: number = runtimes.length;
+
+    const sortedRuntimes: Array<number> = runtimes.sort((prevValue: number, currentValue: number): number => {
+      return prevValue - currentValue;
+    });
+
+    let quartileAmounts: number;
+    let medianAmounts: number;
+
+    let firstQuartileData: Array<number>;
+    let medianQuartileData: Array<number>;
+    let thirdQuartileData: Array<number>;
+
+    // tslint:disable:no-magic-numbers
+    if (runtimeAmounts >= 3) {
+      // We have enough data to reasonably extrapolate the quartiles.
+      quartileAmounts = Math.floor(runtimes.length / 4);
+      medianAmounts = Math.ceil(runtimes.length / 2);
+
+      firstQuartileData = sortedRuntimes.slice(0, quartileAmounts);
+      medianQuartileData = sortedRuntimes.slice(quartileAmounts, quartileAmounts + medianAmounts);
+      thirdQuartileData = sortedRuntimes.slice(sortedRuntimes.length - quartileAmounts);
+    } else {
+      // There is not enough data to reasonably extrapolate quartiles.
+      // Use all available data for each quartile instead.
+      quartileAmounts = runtimeAmounts;
+      medianAmounts = runtimeAmounts;
+
+      firstQuartileData = sortedRuntimes;
+      medianQuartileData = sortedRuntimes;
+      thirdQuartileData = sortedRuntimes;
+    }
+
+    const firstQuartileRuntime: number = this._calculateFlowNodeArithmeticMeanRuntime(firstQuartileData);
+    const medianQuartileRuntime: number = this._calculateFlowNodeArithmeticMeanRuntime(medianQuartileData);
+    const thirdQuartileRuntime: number = this._calculateFlowNodeArithmeticMeanRuntime(thirdQuartileData);
+
+    return {
+      firstQuartile: firstQuartileRuntime,
+      median: medianQuartileRuntime,
+      thirdQuartile: thirdQuartileRuntime,
+    };
   }
 
   /**
