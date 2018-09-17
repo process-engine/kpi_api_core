@@ -288,7 +288,7 @@ export class KpiApiService implements IKpiApiService {
   }
 
   /**
-   * Calculates the quartile runtims for the given set of runtimes.
+   * Calculates the quartiles for the given set of runtimes.
    *
    * @param   runtimes The set of runtimes for which to calculate the quartiles.
    * @returns          A set of quartiles.
