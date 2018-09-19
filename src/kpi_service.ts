@@ -149,16 +149,14 @@ export class KpiApiService implements IKpiApiService {
    */
   private _metricBelongsToFinishedFlowNodeInstance(metricToCheck: Metric, metricIndex: number, allFlowNodeMetrics: Array<Metric>): boolean {
 
-    const notAFlowNodeInstanceMetric: boolean = !metricToCheck.flowNodeInstanceId || !metricToCheck.flowNodeId;
+    const metricDoesNotBelongToAFlowNodeInstance: boolean = !metricToCheck.flowNodeInstanceId || !metricToCheck.flowNodeId;
 
-    if (notAFlowNodeInstanceMetric) {
+    if (metricDoesNotBelongToAFlowNodeInstance) {
       return false;
     }
 
-    const isExitingMetric: boolean =
-      !(metricToCheck.metricType === MetricMeasurementPoint.onFlowNodeEnter || metricToCheck.metricType === MetricMeasurementPoint.onFlowNodeSuspend);
-
-    if (isExitingMetric) {
+    const metricWasRecordedOnFlowNodeExit: boolean = metricToCheck.metricType === MetricMeasurementPoint.onFlowNodeExit;
+    if (metricWasRecordedOnFlowNodeExit) {
       return true;
     }
 
