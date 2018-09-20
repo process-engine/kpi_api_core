@@ -1,6 +1,6 @@
 import * as moment from 'moment';
 
-import {ActiveToken, FlowNodeRuntimeInformation, IKpiApiService} from '@process-engine/kpi_api_contracts';
+import {ActiveToken, FlowNodeRuntimeInformation, IKpiApi} from '@process-engine/kpi_api_contracts';
 import {IMetricsRepository, Metric, MetricMeasurementPoint} from '@process-engine/metrics_api_contracts';
 import {IFlowNodeInstanceRepository, Runtime} from '@process-engine/process_engine_contracts';
 
@@ -35,7 +35,7 @@ type QuartileInfos = {
   thirdQuartile: number,
 };
 
-export class KpiApiService implements IKpiApiService {
+export class KpiApiService implements IKpiApi {
 
   private _iamService: IIAMService;
   private _flowNodeInstanceRepository: IFlowNodeInstanceRepository;
