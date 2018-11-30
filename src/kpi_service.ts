@@ -113,6 +113,19 @@ export class KpiApiService implements IKpiApi {
     return activeTokenInfos;
   }
 
+  public async getActiveTokensForCorrelationAndProcessModel(identity: IIdentity,
+                                                            correlationId: string,
+                                                            processModelId: string): Promise<Array<ActiveToken>> {
+
+    const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository
+                                                                                        .queryActiveByCorrelationAndProcessModel(correlationId,
+                                                                                                                                processModelId);
+
+    const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
+
+    return activeTokenInfos;
+  }
+
   public async getActiveTokensForFlowNode(identity: IIdentity, flowNodeId: string): Promise<Array<ActiveToken>> {
 
     const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
