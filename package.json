@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/process-engine/kpi_api_core#readme",
   "dependencies": {
-    "@process-engine/kpi_api_contracts": "feature~add_functions_for_live-execution-tracker",
+    "@process-engine/kpi_api_contracts": "~1.1.0",
     "@process-engine/metrics_api_contracts": "~1.0.0",
-    "@process-engine/process_engine_contracts": "feature~add_queries_for_live-execution-tracker",
+    "@process-engine/process_engine_contracts": "~34.2.0",
     "moment": "2.22.2"
   },
   "devDependencies": {
