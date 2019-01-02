@@ -19,7 +19,7 @@
   },
   "homepage": "https://github.com/process-engine/kpi_api_core#readme",
   "dependencies": {
-    "@process-engine/kpi_api_contracts": "~1.1.0",
+    "@process-engine/kpi_api_contracts": "feature~add_get_token_by_process-instance_functionality",
     "@process-engine/metrics_api_contracts": "~1.0.0",
     "@process-engine/process_engine_contracts": "~34.2.0",
     "moment": "2.22.2"
