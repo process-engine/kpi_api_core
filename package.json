@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/kpi_api_core",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Contains all the core components for the kpi api. ",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
