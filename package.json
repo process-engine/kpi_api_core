@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/kpi_api_core",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "description": "Contains all the core components for the kpi api. ",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
@@ -21,7 +21,7 @@
   "dependencies": {
     "@process-engine/kpi_api_contracts": "~1.2.0",
     "@process-engine/metrics_api_contracts": "~1.0.0",
-    "@process-engine/process_engine_contracts": "^37.0.0",
+    "@process-engine/process_engine_contracts": "^38.0.0",
     "moment": "~2.22.2"
   },
   "devDependencies": {
