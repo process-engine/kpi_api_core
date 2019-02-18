@@ -41,30 +41,19 @@ export class KpiApiService implements IKpiApi {
   private _flowNodeInstanceRepository: IFlowNodeInstanceRepository;
   private _metricsRepository: IMetricsRepository;
 
-  constructor(flowNodeInstanceRepository: IFlowNodeInstanceRepository,
-              iamService: IIAMService,
-              metricsRepository: IMetricsRepository,
-             ) {
+  constructor(
+    flowNodeInstanceRepository: IFlowNodeInstanceRepository,
+    iamService: IIAMService,
+    metricsRepository: IMetricsRepository,
+    ) {
     this._flowNodeInstanceRepository = flowNodeInstanceRepository;
     this._iamService = iamService;
     this._metricsRepository = metricsRepository;
   }
 
-  private get flowNodeInstanceRepository(): IFlowNodeInstanceRepository {
-    return this._flowNodeInstanceRepository;
-  }
-
-  private get iamService(): IIAMService {
-    return this._iamService;
-  }
-
-  private get metricsRepository(): IMetricsRepository {
-    return this._metricsRepository;
-  }
-
   public async getRuntimeInformationForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<FlowNodeRuntimeInformation>> {
 
-    const metrics: Array<Metric> = await this.metricsRepository.readMetricsForProcessModel(processModelId);
+    const metrics: Array<Metric> = await this._metricsRepository.readMetricsForProcessModel(processModelId);
 
     // Do not include FlowNode instances which are still being executed,
     // since they do net yet have a final runtime.
@@ -86,7 +75,7 @@ export class KpiApiService implements IKpiApi {
                                                 processModelId: string,
                                                 flowNodeId: string): Promise<FlowNodeRuntimeInformation> {
 
-    const metrics: Array<Metric> = await this.metricsRepository.readMetricsForProcessModel(processModelId);
+    const metrics: Array<Metric> = await this._metricsRepository.readMetricsForProcessModel(processModelId);
 
     const flowNodeMetrics: Array<Metric> = metrics.filter((entry: Metric): boolean => {
       return entry.flowNodeId === flowNodeId;
@@ -104,7 +93,7 @@ export class KpiApiService implements IKpiApi {
 
   public async getActiveTokensForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<ActiveToken>> {
 
-    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
+    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this._flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
     const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
 
@@ -118,7 +107,7 @@ export class KpiApiService implements IKpiApi {
                                                             processModelId: string): Promise<Array<ActiveToken>> {
 
     const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
-      await this.flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
+      await this._flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
 
     const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
 
@@ -129,7 +118,7 @@ export class KpiApiService implements IKpiApi {
                                                  processInstanceId: string): Promise<Array<ActiveToken>> {
 
     const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
-      await this.flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
+      await this._flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
 
     const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
 
@@ -138,7 +127,7 @@ export class KpiApiService implements IKpiApi {
 
   public async getActiveTokensForFlowNode(identity: IIdentity, flowNodeId: string): Promise<Array<ActiveToken>> {
 
-    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
+    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this._flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
 
     const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
 
