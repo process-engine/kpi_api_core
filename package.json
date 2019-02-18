@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/process-engine/kpi_api_core#readme",
   "dependencies": {
+    "@process-engine/flow_node_instance.contracts": "feature~initial_implementation",
     "@process-engine/kpi_api_contracts": "~1.2.0",
     "@process-engine/metrics_api_contracts": "~1.0.0",
-    "@process-engine/process_engine_contracts": "^39.0.0",
     "moment": "~2.24.0"
   },
   "devDependencies": {
