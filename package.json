@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/kpi_api_core",
-  "version": "1.2.6",
+  "version": "2.0.0",
   "description": "Contains all the core components for the kpi api. ",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
@@ -19,9 +19,9 @@
   },
   "homepage": "https://github.com/process-engine/kpi_api_core#readme",
   "dependencies": {
-    "@process-engine/kpi_api_contracts": "~1.2.0",
-    "@process-engine/metrics_api_contracts": "~1.0.0",
-    "@process-engine/process_engine_contracts": "^39.0.0",
+    "@process-engine/flow_node_instance.contracts": "^1.0.0",
+    "@process-engine/kpi_api_contracts": "^1.2.0",
+    "@process-engine/metrics_api_contracts": "^1.0.0",
     "moment": "~2.24.0"
   },
   "devDependencies": {
