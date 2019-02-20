@@ -1,8 +1,8 @@
 import * as moment from 'moment';
 
+import {FlowNodeInstance, FlowNodeInstanceState, IFlowNodeInstanceRepository, ProcessToken} from '@process-engine/flow_node_instance.contracts';
 import {ActiveToken, FlowNodeRuntimeInformation, IKpiApi} from '@process-engine/kpi_api_contracts';
 import {IMetricsRepository, Metric, MetricMeasurementPoint} from '@process-engine/metrics_api_contracts';
-import {IFlowNodeInstanceRepository, Runtime} from '@process-engine/process_engine_contracts';
 
 import {IIAMService, IIdentity} from '@essential-projects/iam_contracts';
 
@@ -41,30 +41,19 @@ export class KpiApiService implements IKpiApi {
   private _flowNodeInstanceRepository: IFlowNodeInstanceRepository;
   private _metricsRepository: IMetricsRepository;
 
-  constructor(flowNodeInstanceRepository: IFlowNodeInstanceRepository,
-              iamService: IIAMService,
-              metricsRepository: IMetricsRepository,
-             ) {
+  constructor(
+    flowNodeInstanceRepository: IFlowNodeInstanceRepository,
+    iamService: IIAMService,
+    metricsRepository: IMetricsRepository,
+    ) {
     this._flowNodeInstanceRepository = flowNodeInstanceRepository;
     this._iamService = iamService;
     this._metricsRepository = metricsRepository;
   }
 
-  private get flowNodeInstanceRepository(): IFlowNodeInstanceRepository {
-    return this._flowNodeInstanceRepository;
-  }
-
-  private get iamService(): IIAMService {
-    return this._iamService;
-  }
-
-  private get metricsRepository(): IMetricsRepository {
-    return this._metricsRepository;
-  }
-
   public async getRuntimeInformationForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<FlowNodeRuntimeInformation>> {
 
-    const metrics: Array<Metric> = await this.metricsRepository.readMetricsForProcessModel(processModelId);
+    const metrics: Array<Metric> = await this._metricsRepository.readMetricsForProcessModel(processModelId);
 
     // Do not include FlowNode instances which are still being executed,
     // since they do net yet have a final runtime.
@@ -86,7 +75,7 @@ export class KpiApiService implements IKpiApi {
                                                 processModelId: string,
                                                 flowNodeId: string): Promise<FlowNodeRuntimeInformation> {
 
-    const metrics: Array<Metric> = await this.metricsRepository.readMetricsForProcessModel(processModelId);
+    const metrics: Array<Metric> = await this._metricsRepository.readMetricsForProcessModel(processModelId);
 
     const flowNodeMetrics: Array<Metric> = metrics.filter((entry: Metric): boolean => {
       return entry.flowNodeId === flowNodeId;
@@ -104,9 +93,9 @@ export class KpiApiService implements IKpiApi {
 
   public async getActiveTokensForProcessModel(identity: IIdentity, processModelId: string): Promise<Array<ActiveToken>> {
 
-    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByProcessModel(processModelId);
+    const flowNodeInstances: Array<FlowNodeInstance> = await this._flowNodeInstanceRepository.queryByProcessModel(processModelId);
 
-    const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
+    const activeFlowNodeInstances: Array<FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
 
     const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
 
@@ -117,8 +106,8 @@ export class KpiApiService implements IKpiApi {
                                                             correlationId: string,
                                                             processModelId: string): Promise<Array<ActiveToken>> {
 
-    const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
-      await this.flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
+    const activeFlowNodeInstances: Array<FlowNodeInstance> =
+      await this._flowNodeInstanceRepository.queryActiveByCorrelationAndProcessModel(correlationId, processModelId);
 
     const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
 
@@ -128,8 +117,8 @@ export class KpiApiService implements IKpiApi {
   public async getActiveTokensForProcessInstance(identity: IIdentity,
                                                  processInstanceId: string): Promise<Array<ActiveToken>> {
 
-    const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> =
-      await this.flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
+    const activeFlowNodeInstances: Array<FlowNodeInstance> =
+      await this._flowNodeInstanceRepository.queryActiveByProcessInstance(processInstanceId);
 
     const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
 
@@ -138,9 +127,9 @@ export class KpiApiService implements IKpiApi {
 
   public async getActiveTokensForFlowNode(identity: IIdentity, flowNodeId: string): Promise<Array<ActiveToken>> {
 
-    const flowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = await this.flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
+    const flowNodeInstances: Array<FlowNodeInstance> = await this._flowNodeInstanceRepository.queryByFlowNodeId(flowNodeId);
 
-    const activeFlowNodeInstances: Array<Runtime.Types.FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
+    const activeFlowNodeInstances: Array<FlowNodeInstance> = flowNodeInstances.filter(this._isFlowNodeInstanceActive);
 
     const activeTokenInfos: Array<ActiveToken> = activeFlowNodeInstances.map(this._createActiveTokenInfoForFlowNodeInstance);
 
@@ -383,9 +372,9 @@ export class KpiApiService implements IKpiApi {
    * @param   flowNodeInstance The FlowNode for which to determine the state.
    * @returns                  True, if the instance is active, otherwise false.
    */
-  private _isFlowNodeInstanceActive(flowNodeInstance: Runtime.Types.FlowNodeInstance): boolean {
-    return flowNodeInstance.state === Runtime.Types.FlowNodeInstanceState.running
-      || flowNodeInstance.state === Runtime.Types.FlowNodeInstanceState.suspended;
+  private _isFlowNodeInstanceActive(flowNodeInstance: FlowNodeInstance): boolean {
+    return flowNodeInstance.state === FlowNodeInstanceState.running
+      || flowNodeInstance.state === FlowNodeInstanceState.suspended;
   }
 
   /**
@@ -394,9 +383,9 @@ export class KpiApiService implements IKpiApi {
    * @param   flowNodeInstance The FlowNodeInstance to convert.
    * @returns                  The created ActiveToken.
    */
-  private _createActiveTokenInfoForFlowNodeInstance(flowNodeInstance: Runtime.Types.FlowNodeInstance): ActiveToken {
+  private _createActiveTokenInfoForFlowNodeInstance(flowNodeInstance: FlowNodeInstance): ActiveToken {
 
-    const currentProcessToken: Runtime.Types.ProcessToken = flowNodeInstance.tokens[0];
+    const currentProcessToken: ProcessToken = flowNodeInstance.tokens[0];
 
     const activeTokenInfo: ActiveToken = new ActiveToken();
     activeTokenInfo.processInstanceId = currentProcessToken.processInstanceId;
