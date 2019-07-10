@@ -1,6 +1,6 @@
 {
   "name": "@process-engine/kpi_api_core",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Contains the file-system repository for the Metrics API. ",
   "main": "dist/commonjs/index.js",
   "typings": "dist/index.d.ts",
